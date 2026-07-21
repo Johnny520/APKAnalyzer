@@ -82,8 +82,15 @@ fun AboutScreen() {
                 icon = Icons.Default.Person,
                 title = "开发者信息"
             ) {
-                InfoRow("昵称", "小奶瓶")
-                InfoRow("QQ", "3679265780")
+                InfoRow("作者", "文强哥 (Johnny520)")
+                ClickableInfoRow("官网", "johnny520.github.io/Johnny/") {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://johnny520.github.io/Johnny/"))
+                    context.startActivity(intent)
+                }
+                ClickableInfoRow("GitHub", "github.com/Johnny520") {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Johnny520"))
+                    context.startActivity(intent)
+                }
                 InfoRow("邮箱", "3679265780@qq.com")
             }
 
@@ -183,7 +190,8 @@ fun AboutScreen() {
                 title = "版权信息"
             ) {
                 Text(
-                    "本应用为开源免费软件，由开发者「小奶瓶」独立开发。" +
+                    "本应用为开源免费软件，由开发者「文强哥 (Johnny520)」独立开发。" +
+                    "\n\n开源协议：MIT License" +
                     "\n\n未经开发者书面授权，不得将本应用用于商业用途或进行反编译、二次分发。" +
                     "\n\n本应用使用的开源组件受其各自的许可证约束。",
                     style = MaterialTheme.typography.bodySmall,
@@ -263,6 +271,28 @@ private fun InfoRow(label: String, value: String) {
             value,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun ClickableInfoRow(label: String, value: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.width(60.dp)
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

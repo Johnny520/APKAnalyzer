@@ -2,6 +2,8 @@
 
 一款功能强大的 Android APK 分析工具，集成 Pollinations.ai 图像生成与可自定义 MCP 服务器调用功能。
 
+> 作者：**文强哥 (Johnny520)** · [官网](https://johnny520.github.io/Johnny/) · [GitHub](https://github.com/Johnny520)
+
 ## 功能特性
 
 ### 1. APK 文件分析
@@ -112,4 +114,4 @@ APK 文件将输出至 `app/build/outputs/apk/debug/app-debug.apk`
 
 ## 开源协议
 
-MIT License
+MIT License © 文强哥 (Johnny520)
