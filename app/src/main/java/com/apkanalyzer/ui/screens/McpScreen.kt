@@ -217,8 +217,13 @@ fun McpScreen(viewModel: MainViewModel) {
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            "MCP 是一种让本应用连接外部工具的接口。默认地址指向本机服务，需要你自己在电脑或手机上启动对应的 MCP 服务后才能连接。",
+                            "MCP（Model Context Protocol，模型上下文协议）是一种让本应用连接外部 AI 工具和服务的接口。" +
+                            "\n\n• 连接后，AI 助手可以调用远程工具来处理任务（如搜索、生成图片、操作文件等）" +
+                            "\n• 默认地址指向 Pollinations.ai 的免费 MCP 服务（文生图）" +
+                            "\n• 你也可以输入自定义的 MCP 服务器地址" +
+                            "\n• 需要确保目标 MCP 服务已启动且可访问",
                             style = MaterialTheme.typography.bodySmall,
+                            lineHeight = 20.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
                     }

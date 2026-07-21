@@ -20,6 +20,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -39,7 +40,7 @@ class McpClient {
     private val client: OkHttpClient
     private var currentEventSource: EventSource? = null
     private val messageId = AtomicInteger(1)
-    private val pendingResponses = mutableMapOf<Int, CompletableDeferred<McpJsonRpcResponse?>>()
+    private val pendingResponses = ConcurrentHashMap<Int, CompletableDeferred<McpJsonRpcResponse?>>()
 
     // 使用 SupervisorJob 确保 cancel 不会影响整个 scope
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -290,7 +291,7 @@ class McpClient {
 
     /**
      * SSE 传输：通过 Server-Sent Events 接收服务器推送
-     * 修复：正确处理 endpoint 事件设置消息端点，增强错误回调
+     * 修复：使用 CompletableDeferred 正确等待连接建立，而非硬编码延迟
      */
     private suspend fun connectSSE(url: String): Boolean {
         return withContext(Dispatchers.IO) {
@@ -303,14 +304,21 @@ class McpClient {
                 requestBuilder.header(key, value)
             }
 
+            val connectedDeferred = CompletableDeferred<Boolean>()
+
             val listener = object : EventSourceListener() {
                 override fun onOpen(eventSource: EventSource, response: Response) {
                     addLog("SSE 连接已打开，等待初始化...")
-                    // SSE onOpen 不代表握手完成，需要等初始化成功
                 }
 
                 override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
                     handleSseEvent(type, data)
+                    // 检查是否已连接成功
+                    if (_connectionState.value is McpConnectionState.Connected) {
+                        connectedDeferred.tryComplete(true)
+                    } else if (_connectionState.value is McpConnectionState.Error) {
+                        connectedDeferred.tryComplete(false)
+                    }
                 }
 
                 override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
@@ -323,6 +331,7 @@ class McpClient {
                     } else {
                         _connectionState.value = McpConnectionState.Error(msg, t?.stackTraceToString()?.take(500))
                     }
+                    connectedDeferred.tryComplete(false)
                 }
 
                 override fun onClosed(eventSource: EventSource) {
@@ -335,18 +344,19 @@ class McpClient {
                     } else {
                         _connectionState.value = McpConnectionState.Disconnected
                     }
+                    connectedDeferred.tryComplete(false)
                 }
             }
 
             currentEventSource = EventSources.createFactory(client).newEventSource(requestBuilder.build(), listener)
 
-            // 等待初始化完成（在 handleSseEvent 中异步处理）
-            // SSE 初始化是异步的（onOpen → sendInitialize → 收到响应）
-            // 这里我们给一个合理的等待时间
-            delay(3000)
-
-            // 检查是否成功连接
-            _connectionState.value is McpConnectionState.Connected
+            // 等待初始化完成，最多 30 秒
+            withTimeoutOrNull(McpConstants.INIT_TIMEOUT_SECONDS * 1000L) {
+                connectedDeferred.await()
+            } ?: run {
+                addLog("SSE 连接超时")
+                false
+            }
         }
     }
 

@@ -110,17 +110,58 @@ fun AnalyzerScreen(viewModel: MainViewModel) {
                 }
                 else -> {
                     Column(
-                        modifier = Modifier.align(Alignment.Center).padding(horizontal = 24.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Spacer(modifier = Modifier.height(48.dp))
                         Icon(Icons.Default.FileOpen, contentDescription = null, modifier = Modifier.size(64.dp))
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text("点击右下角按钮选择 APK 文件")
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("APK 分析", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            "APK 是安卓应用的安装包（类似电脑上的 .exe）。你可以从手机「文件管理」里找到已下载的 .apk，或从浏览器下载的安装包里选择。",
+                            "分析任意 Android APK 安装包，查看包名、版本、权限、四大组件、证书等详细信息。",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text("功能说明", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "• APK 是安卓应用的安装包，类似电脑上的 .exe\n" +
+                                    "• 点击右下角 ⊕ 按钮，从手机文件中选择 .apk 文件\n" +
+                                    "• 自动解析：包名、版本、权限、Activity/Service/Receiver/Provider\n" +
+                                    "• 查看证书签名、哈希值（MD5/SHA1/SHA256）\n" +
+                                    "• 查看原生库（.so）和资源文件统计",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    lineHeight = 20.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                    type = "application/vnd.android.package-archive"
+                                }
+                                filePicker.launch(intent)
+                            }
+                        ) {
+                            Icon(Icons.Default.FileOpen, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("选择 APK 文件")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "提示：你也可以点击右下角的浮动按钮选择文件",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
                     }
                 }

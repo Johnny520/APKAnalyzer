@@ -56,6 +56,36 @@ fun PollinationsScreen(viewModel: MainViewModel) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // 功能说明卡片（首次使用提示）
+            var showInfo by remember { mutableStateOf(true) }
+            if (showInfo) {
+                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("功能说明", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                            IconButton(onClick = { showInfo = false }, modifier = Modifier.size(24.dp)) {
+                                Icon(Icons.Default.Clear, contentDescription = "关闭", modifier = Modifier.size(16.dp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Pollinations.ai 是一个免费的 AI 文生图服务。" +
+                            "\n• 输入提示词（支持中文），选择模型和尺寸" +
+                            "\n• 支持模型：flux（默认）、turbo（快速）、sdxl（高清）、dall-e-3" +
+                            "\n• 可选种子值：相同种子 + 相同提示词 = 相同图像" +
+                            "\n• 生成图像可保存或浏览器中打开下载",
+                            style = MaterialTheme.typography.bodySmall,
+                            lineHeight = 20.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            }
+
             OutlinedTextField(
                 value = prompt,
                 onValueChange = { prompt = it },
@@ -143,16 +173,30 @@ fun PollinationsScreen(viewModel: MainViewModel) {
             }
 
             if (error != null) {
-                Text(
-                    "图像生成失败，请稍后重试，或换一个提示词再试。",
-                    color = MaterialTheme.colorScheme.error
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    error,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                )
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            "图像生成失败，请稍后重试，或换一个提示词再试。",
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            "常见原因：网络连接问题、提示词包含敏感内容、API 服务暂时不可用。",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            error,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.5f)
+                        )
+                    }
+                }
             }
 
             imageUrl?.let { url ->

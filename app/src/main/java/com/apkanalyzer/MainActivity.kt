@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
         if (results.isNotEmpty() && results.values.all { !it }) {
             Toast.makeText(
                 this,
-                "需要存储权限才能读取文件，请在系统设置中开启",
+                "需要存储权限才能读取手机上的 APK 文件进行分析。请在系统设置中手动开启「文件和媒体」权限。",
                 Toast.LENGTH_LONG
             ).show()
         }

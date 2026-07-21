@@ -3,6 +3,7 @@ package com.apkanalyzer.analyzer
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.util.Log
 import com.apkanalyzer.model.ApkInfo
 import com.apkanalyzer.model.CertificateInfo
 import com.apkanalyzer.model.ComponentInfo
@@ -67,7 +68,9 @@ class ApkAnalyzer(private val context: Context) {
                         entry.name.startsWith("META-INF/") && (entry.name.endsWith(".RSA") || entry.name.endsWith(".DSA") || entry.name.endsWith(".EC")) -> {
                             try {
                                 certificateInfo = parseCertificate(zip.getInputStream(entry).readBytes())
-                            } catch (_: Exception) {}
+                            } catch (e: Exception) {
+                                Log.w("ApkAnalyzer", "解析证书失败: ${e.message}")
+                            }
                         }
                     }
                 }
@@ -80,7 +83,9 @@ class ApkAnalyzer(private val context: Context) {
                     iconBytes = zip.getInputStream(iconEntry).readBytes()
                 }
             }
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.w("ApkAnalyzer", "ZipFile 分析失败: ${e.message}")
+        }
 
         // Use PackageManager for detailed info if possible
         try {
@@ -146,7 +151,9 @@ class ApkAnalyzer(private val context: Context) {
                     ))
                 }
             }
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.w("ApkAnalyzer", "PackageManager 解析失败: ${e.message}")
+        }
 
         ApkInfo(
             filePath = filePath,
@@ -190,7 +197,8 @@ class ApkAnalyzer(private val context: Context) {
                 validUntil = dateFormat.format(cert.notAfter),
                 signatureAlgorithm = cert.sigAlgName
             )
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.w("ApkAnalyzer", "证书解析失败: ${e.message}")
             null
         }
     }
