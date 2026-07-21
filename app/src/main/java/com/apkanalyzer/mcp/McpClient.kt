@@ -315,9 +315,9 @@ class McpClient {
                     handleSseEvent(type, data)
                     // 检查是否已连接成功
                     if (_connectionState.value is McpConnectionState.Connected) {
-                        connectedDeferred.tryComplete(true)
+                        connectedDeferred.complete(true)
                     } else if (_connectionState.value is McpConnectionState.Error) {
-                        connectedDeferred.tryComplete(false)
+                        connectedDeferred.complete(false)
                     }
                 }
 
@@ -331,7 +331,7 @@ class McpClient {
                     } else {
                         _connectionState.value = McpConnectionState.Error(msg, t?.stackTraceToString()?.take(500))
                     }
-                    connectedDeferred.tryComplete(false)
+                    connectedDeferred.complete(false)
                 }
 
                 override fun onClosed(eventSource: EventSource) {
@@ -344,7 +344,7 @@ class McpClient {
                     } else {
                         _connectionState.value = McpConnectionState.Disconnected
                     }
-                    connectedDeferred.tryComplete(false)
+                    connectedDeferred.complete(false)
                 }
             }
 
