@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -328,37 +329,38 @@ private val GithubIcon = ImageVector.Builder(
 ).apply {
     path(
         fillAlpha = 1f,
-        strokeAlpha = 0f
-    ) {
-        moveTo(41.4395f, 69.3848f)
-        cubicTo(28.8066f, 67.8535f, 19.9062f, 58.7617f, 19.9062f, 46.9902f)
-        cubicTo(19.9062f, 42.2051f, 21.6289f, 37.0371f, 24.5f, 33.5918f)
-        cubicTo(23.2559f, 30.4336f, 23.4473f, 23.7344f, 24.8828f, 20.959f)
-        cubicTo(28.7109f, 20.4805f, 33.8789f, 22.4902f, 36.9414f, 25.2656f)
-        cubicTo(40.5781f, 24.1172f, 44.4062f, 23.543f, 49.0957f, 23.543f)
-        cubicTo(53.7852f, 23.543f, 57.6133f, 24.1172f, 61.0586f, 25.1699f)
-        cubicTo(64.0254f, 22.4902f, 69.2891f, 20.4805f, 73.1172f, 20.959f)
-        cubicTo(74.457f, 23.543f, 74.6484f, 30.2422f, 73.4043f, 33.4961f)
-        cubicTo(76.4668f, 37.1328f, 78.0937f, 42.0137f, 78.0937f, 46.9902f)
-        cubicTo(78.0937f, 58.7617f, 69.1934f, 67.6621f, 56.3691f, 69.2891f)
-        cubicTo(59.623f, 71.3945f, 61.8242f, 75.9883f, 61.8242f, 81.252f)
-        lineTo(61.8242f, 91.2051f)
-        cubicTo(61.8242f, 94.0762f, 64.2168f, 95.7031f, 67.0879f, 94.5547f)
-        cubicTo(84.4102f, 87.9512f, 98f, 70.6289f, 98f, 49.1914f)
-        cubicTo(98f, 22.1074f, 75.9883f, 0f, 48.9043f, 0f)
-        cubicTo(21.8203f, 0f, 0f, 22.1074f, 0f, 49.1914f)
-        cubicTo(0f, 70.4375f, 13.4941f, 88.0469f, 31.6777f, 94.6504f)
-        cubicTo(34.2617f, 95.6074f, 36.75f, 93.8848f, 36.75f, 91.3008f)
-        lineTo(36.75f, 83.6445f)
-        cubicTo(35.4102f, 84.2188f, 33.6875f, 84.6016f, 32.1562f, 84.6016f)
-        cubicTo(25.8398f, 84.6016f, 22.1074f, 81.1563f, 19.4277f, 74.7441f)
-        cubicTo(18.375f, 72.1602f, 17.2266f, 70.6289f, 15.0254f, 70.3418f)
-        cubicTo(13.877f, 70.2461f, 13.4941f, 69.7676f, 13.4941f, 69.1934f)
-        cubicTo(13.4941f, 68.0449f, 15.4082f, 67.1836f, 17.3223f, 67.1836f)
-        cubicTo(20.0977f, 67.1836f, 22.4902f, 68.9063f, 24.9785f, 72.4473f)
-        cubicTo(26.8926f, 75.2227f, 28.9023f, 76.4668f, 31.2949f, 76.4668f)
-        cubicTo(33.6875f, 76.4668f, 35.2187f, 75.6055f, 37.4199f, 73.4043f)
-        cubicTo(39.0469f, 71.7773f, 40.291f, 70.3418f, 41.4395f, 69.3848f)
-        close()
-    }
+        strokeAlpha = 0f,
+        pathData = listOf(
+            PathNode.MoveTo(41.4395f, 69.3848f),
+            PathNode.CurveTo(28.8066f, 67.8535f, 19.9062f, 58.7617f, 19.9062f, 46.9902f),
+            PathNode.CurveTo(19.9062f, 42.2051f, 21.6289f, 37.0371f, 24.5f, 33.5918f),
+            PathNode.CurveTo(23.2559f, 30.4336f, 23.4473f, 23.7344f, 24.8828f, 20.959f),
+            PathNode.CurveTo(28.7109f, 20.4805f, 33.8789f, 22.4902f, 36.9414f, 25.2656f),
+            PathNode.CurveTo(40.5781f, 24.1172f, 44.4062f, 23.543f, 49.0957f, 23.543f),
+            PathNode.CurveTo(53.7852f, 23.543f, 57.6133f, 24.1172f, 61.0586f, 25.1699f),
+            PathNode.CurveTo(64.0254f, 22.4902f, 69.2891f, 20.4805f, 73.1172f, 20.959f),
+            PathNode.CurveTo(74.457f, 23.543f, 74.6484f, 30.2422f, 73.4043f, 33.4961f),
+            PathNode.CurveTo(76.4668f, 37.1328f, 78.0937f, 42.0137f, 78.0937f, 46.9902f),
+            PathNode.CurveTo(78.0937f, 58.7617f, 69.1934f, 67.6621f, 56.3691f, 69.2891f),
+            PathNode.CurveTo(59.623f, 71.3945f, 61.8242f, 75.9883f, 61.8242f, 81.252f),
+            PathNode.LineTo(61.8242f, 91.2051f),
+            PathNode.CurveTo(61.8242f, 94.0762f, 64.2168f, 95.7031f, 67.0879f, 94.5547f),
+            PathNode.CurveTo(84.4102f, 87.9512f, 98f, 70.6289f, 98f, 49.1914f),
+            PathNode.CurveTo(98f, 22.1074f, 75.9883f, 0f, 48.9043f, 0f),
+            PathNode.CurveTo(21.8203f, 0f, 0f, 22.1074f, 0f, 49.1914f),
+            PathNode.CurveTo(0f, 70.4375f, 13.4941f, 88.0469f, 31.6777f, 94.6504f),
+            PathNode.CurveTo(34.2617f, 95.6074f, 36.75f, 93.8848f, 36.75f, 91.3008f),
+            PathNode.LineTo(36.75f, 83.6445f),
+            PathNode.CurveTo(35.4102f, 84.2188f, 33.6875f, 84.6016f, 32.1562f, 84.6016f),
+            PathNode.CurveTo(25.8398f, 84.6016f, 22.1074f, 81.1563f, 19.4277f, 74.7441f),
+            PathNode.CurveTo(18.375f, 72.1602f, 17.2266f, 70.6289f, 15.0254f, 70.3418f),
+            PathNode.CurveTo(13.877f, 70.2461f, 13.4941f, 69.7676f, 13.4941f, 69.1934f),
+            PathNode.CurveTo(13.4941f, 68.0449f, 15.4082f, 67.1836f, 17.3223f, 67.1836f),
+            PathNode.CurveTo(20.0977f, 67.1836f, 22.4902f, 68.9063f, 24.9785f, 72.4473f),
+            PathNode.CurveTo(26.8926f, 75.2227f, 28.9023f, 76.4668f, 31.2949f, 76.4668f),
+            PathNode.CurveTo(33.6875f, 76.4668f, 35.2187f, 75.6055f, 37.4199f, 73.4043f),
+            PathNode.CurveTo(39.0469f, 71.7773f, 40.291f, 70.3418f, 41.4395f, 69.3848f),
+            PathNode.Close,
+        )
+    )
 }.build()
