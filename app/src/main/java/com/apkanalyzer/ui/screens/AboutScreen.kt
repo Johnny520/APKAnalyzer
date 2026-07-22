@@ -2,6 +2,7 @@ package com.apkanalyzer.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -91,7 +92,7 @@ fun AboutScreen() {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Johnny520"))
                     context.startActivity(intent)
                 }
-                InfoRow("邮箱", "3679265780@qq.com")
+                InfoRow("邮箱", "1689969048@qq.com")
             }
 
             // 技术说明
@@ -292,7 +293,8 @@ private fun ClickableInfoRow(label: String, value: String, onClick: () -> Unit) 
             value,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable { onClick() }
         )
     }
 }
