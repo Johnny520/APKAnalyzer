@@ -52,5 +52,19 @@ data class CustomProviderConfig(
     val name: String = "",
     val baseUrl: String = "",
     val apiKey: String = "",
-    val modelName: String = ""
-)
+    val modelName: String = "",
+    val path: String = ""
+) {
+    /**
+     * 获取完整的 API URL
+     * - 如果 path 不为空: baseUrl + path
+     * - 如果 path 为空: 直接用 baseUrl（兼容旧数据）
+     */
+    fun fullUrl(): String {
+        return if (path.isNotBlank()) {
+            baseUrl.trimEnd('/') + "/" + path.trimStart('/')
+        } else {
+            baseUrl
+        }
+    }
+}

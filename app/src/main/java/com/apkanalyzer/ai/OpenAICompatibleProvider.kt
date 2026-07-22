@@ -23,6 +23,33 @@ class OpenAICompatibleProvider : AiProvider {
     var baseUrl: String = ""
     var apiKey: String = ""
     override var modelName: String = ""
+    var path: String = ""
+
+    /**
+     * 获取完整 API URL：path 不为空时拼接，否则直接用 baseUrl
+     */
+    private fun fullUrl(): String {
+        return if (path.isNotBlank()) {
+            baseUrl.trimEnd('/') + "/" + path.trimStart('/')
+        } else {
+            baseUrl
+        }
+    }
+
+    /**
+     * 从 baseUrl 推导 models 端点
+     */
+    private fun modelsUrl(): String {
+        if (path.isNotBlank()) {
+            // 分开模式：baseUrl + /models
+            return baseUrl.trimEnd('/') + "/models"
+        }
+        // 合在一起模式：用字符串替换
+        return baseUrl
+            .replace("/chat/completions", "/models")
+            .replace("/v1/completions", "/v1/models")
+            .replace("/completions", "/models")
+    }
 
     private val gson = com.google.gson.Gson()
     private val client: OkHttpClient
@@ -39,6 +66,33 @@ class OpenAICompatibleProvider : AiProvider {
             .build()
     }
 
+    /**
+     * 获取完整 API URL
+     * - path 不为空: baseUrl + path 拼接
+     * - path 为空: 直接用 baseUrl（兼容旧数据填完整 URL）
+     */
+    private fun getFullUrl(): String {
+        return if (path.isNotBlank()) {
+            baseUrl.trimEnd('/') + "/" + path.trimStart('/')
+        } else {
+            if (baseUrl.endsWith("/chat/completions") || baseUrl.endsWith("/completions")) {
+                baseUrl
+            } else {
+                baseUrl.trimEnd('/') + "/chat/completions"
+            }
+        }
+    }
+
+    /**
+     * 获取 models 端点 URL
+     */
+    private fun getModelsUrl(): String {
+        val fullUrl = getFullUrl()
+        return fullUrl
+            .replace("/chat/completions", "/models")
+            .replace("/completions", "/models")
+    }
+
     override suspend fun chatCompletion(messages: List<Map<String, String>>): Result<String> = withContext(Dispatchers.IO) {
         try {
             val bodyObj = ChatRequest(modelName, messages.map { Message(it["role"] ?: "user", it["content"] ?: "") })
@@ -46,7 +100,7 @@ class OpenAICompatibleProvider : AiProvider {
             val body = jsonBody.toRequestBody("application/json".toMediaType())
 
             val requestBuilder = Request.Builder()
-                .url(baseUrl)
+                .url(fullUrl())
                 .post(body)
                 .header("Content-Type", "application/json")
 
@@ -76,7 +130,7 @@ class OpenAICompatibleProvider : AiProvider {
             val body = jsonBody.toRequestBody("application/json".toMediaType())
 
             val requestBuilder = Request.Builder()
-                .url(baseUrl)
+                .url(fullUrl())
                 .post(body)
                 .header("Content-Type", "application/json")
 
@@ -100,7 +154,7 @@ class OpenAICompatibleProvider : AiProvider {
     override suspend fun healthCheck(): Boolean {
         return try {
             val requestBuilder = Request.Builder()
-                .url(baseUrl.replace("/chat/completions", "/models"))
+                .url(modelsUrl())
                 .get()
             if (apiKey.isNotBlank()) {
                 requestBuilder.header("Authorization", "Bearer $apiKey")
@@ -113,12 +167,8 @@ class OpenAICompatibleProvider : AiProvider {
 
     override suspend fun fetchModels(): List<String> = withContext(Dispatchers.IO) {
         try {
-            // 从 baseUrl 推导 models 端点
-            val modelsUrl = baseUrl
-                .replace("/chat/completions", "/models")
-                .replace("/completions", "/models")
             val requestBuilder = Request.Builder()
-                .url(modelsUrl)
+                .url(modelsUrl())
                 .get()
             if (apiKey.isNotBlank()) {
                 requestBuilder.header("Authorization", "Bearer $apiKey")

@@ -41,6 +41,7 @@ class MultiAiClient {
             baseUrl = cfg.baseUrl
             apiKey = cfg.apiKey
             modelName = cfg.modelName
+            path = cfg.path
             isAvailable = cfg.baseUrl.isNotBlank()
         }
     }

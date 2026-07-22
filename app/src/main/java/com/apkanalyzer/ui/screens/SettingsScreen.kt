@@ -586,6 +586,7 @@ fun CustomProviderEditDialog(
     var baseUrl by remember { mutableStateOf(config?.baseUrl ?: "") }
     var apiKey by remember { mutableStateOf(config?.apiKey ?: "") }
     var modelName by remember { mutableStateOf(config?.modelName ?: "") }
+    var path by remember { mutableStateOf(config?.path ?: "") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -606,9 +607,18 @@ fun CustomProviderEditDialog(
                     value = baseUrl,
                     onValueChange = { baseUrl = it },
                     label = { Text("API 基础地址") },
-                    placeholder = { Text("https://api.deepseek.com/v1/chat/completions") },
+                    placeholder = { Text("https://api.deepseek.com/v1") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
+                )
+                OutlinedTextField(
+                    value = path,
+                    onValueChange = { path = it },
+                    label = { Text("接口路径（可选）") },
+                    placeholder = { Text("/chat/completions") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    supportingText = { Text("留空则直接用 API 基础地址作为完整地址") }
                 )
                 OutlinedTextField(
                     value = apiKey,
@@ -643,14 +653,16 @@ fun CustomProviderEditDialog(
                                 name = name.trim(),
                                 baseUrl = baseUrl.trim(),
                                 apiKey = apiKey.trim(),
-                                modelName = modelName.trim()
+                                modelName = modelName.trim(),
+                                path = path.trim()
                             )
                         } else {
                             CustomProviderConfig(
                                 name = name.trim(),
                                 baseUrl = baseUrl.trim(),
                                 apiKey = apiKey.trim(),
-                                modelName = modelName.trim()
+                                modelName = modelName.trim(),
+                                path = path.trim()
                             )
                         }
                         onSave(newConfig)
