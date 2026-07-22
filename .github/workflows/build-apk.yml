@@ -5,11 +5,6 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
-    inputs:
-      tag_name:
-        description: 'Release tag to upload the APK to'
-        required: false
-        default: 'v1.2.0'
 
 permissions:
   contents: write
@@ -36,6 +31,14 @@ jobs:
       - name: Remove local proxy settings (CI runner has no 127.0.0.1:18080)
         run: sed -i '/proxyHost/d; /proxyPort/d; /nonProxyHosts/d' gradle.properties
 
+      - name: Extract version from build.gradle.kts
+        run: |
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts)
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "Extracted: versionName=$VERSION_NAME, versionCode=$VERSION_CODE"
+
       - name: Decode signing key
         run: echo "${{ secrets.SIGNING_KEY }}" | base64 -d > app/release-key.jks
 
@@ -49,10 +52,17 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Upload APK to Release
+      - name: Rename APK with version
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/APKAnalyzer-v${{ env.VERSION_NAME }}-release.apk"
+
+      - name: Create Release and Upload APK
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
-          files: app/build/outputs/apk/release/*.apk
+          tag_name: v${{ env.VERSION_NAME }}
+          name: v${{ env.VERSION_NAME }} APKAnalyzer
+          files: |
+            app/build/outputs/apk/release/APKAnalyzer-v${{ env.VERSION_NAME }}-release.apk
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
